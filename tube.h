@@ -21,3 +21,12 @@ const char *error_description(int code);
 /* presupplied helper function for converting string to Direction enum */
 Direction string_to_direction(const char *token);
 
+/*question 1*/
+bool get_symbol_position(char **map, int height, int width, char target, int& r, int& c);
+
+/*question 2*/
+char get_symbol_for_station_or_line(char* name);
+
+/*question 3*/
+int validate_route(char** map,int height,int width, char* start_station,char* route,char* destination);
+

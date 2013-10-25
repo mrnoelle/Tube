@@ -53,6 +53,8 @@ int main() {
     cout << "not found.";
   cout << endl << endl;
 
+ 
+
   cout << "====================== Question 2 ======================" << endl << endl;
   
   cout << "The symbol for Victoria station is '" << get_symbol_for_station_or_line("Victoria") << "'" << endl << endl;
@@ -62,7 +64,10 @@ int main() {
   cout << "The symbol for the District Line is '" << get_symbol_for_station_or_line("District Line") << "'" << endl << endl;
 
   /* Birmingham station is not on the Tube map, so this should return ' ' */
+
   cout << "The symbol for Birmingham station is '" << get_symbol_for_station_or_line("Birmingham") << "'" << endl << endl;
+
+
 
   cout << "====================== Question 3 ======================" << endl << endl;
   
@@ -79,7 +84,8 @@ int main() {
     cout << "is an invalid route (" << error_description(result) << ")" << endl;
   cout << endl;
 
-  /* invalid route because of line hopping between stations */ 
+  /* invalid route because of line hopping between stations */
+  
   strcpy(route, "N,N,N,N,N,NE,W");
   cout << "Starting at London Bridge and taking the steps:" << endl;
   cout << route << endl;
@@ -91,7 +97,8 @@ int main() {
   cout << endl;
 
   /* invalid route because of backtracking between stations */
-  strcpy(route, "W,W,E,W,W,W");
+  
+ strcpy(route, "W,W,E,W,W,W");
   cout << "Starting at Sloane Square and taking the steps:" << endl;
   cout << route << endl;
   result = validate_route(map, height, width, "Sloane Square", route, destination);
@@ -110,7 +117,9 @@ int main() {
     cout << "is a valid route with " << result << " line change(s) ending at " << destination << "." << endl;
   else 
     cout << "is an invalid route (" << error_description(result) << ")" << endl;
-  cout << endl;
-
-  return 0;
+    cout << endl;
+  
+    return 0;
 }
+  
+
