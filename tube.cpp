@@ -132,13 +132,13 @@ Direction string_to_direction(const char *token) {
 }
 
 /* question 1 */
-bool get_symbol_position(char **map, int height, int width, char target, int& r, int& c)
+bool get_symbol_position(char **map, int height, int width, char target, int& map_row, int& map_column)
 {
-  for(r=0; r<height; r++)
+  for(map_row=0; map_row<height; map_row++)
     {
-      for(c=0; c<width; c++)
+      for(map_column=0; map_column<width; map_column++)
 	{
-	  if(target==map[r][c])
+	  if(target==map[map_row][map_column])
 	    {
 	      return true;
 	      break;
@@ -274,6 +274,8 @@ char get_symbol_for_station(char* name)
   return  ' ';
 }
 
+
+
 bool check_start_station(char* name)
 {
   char result=get_symbol_for_station(name);
@@ -282,6 +284,8 @@ bool check_start_station(char* name)
   else
     return true;
 } 
+
+
 
 char **allocate_route_array(char* route, int& n_row, int& n_column)
   {
@@ -324,6 +328,7 @@ char **allocate_route_array(char* route, int& n_row, int& n_column)
   }
 
 
+
 //check the next step
 
 bool next_step(const char* token,int &map_row, int &map_column)
@@ -342,7 +347,7 @@ bool next_step(const char* token,int &map_row, int &map_column)
     case SW: map_row++; map_column--; break;
     case INVALID_DIRECTION: return false;
     }
-  //cout << "test "<< endl;
+  
   return true;
 
 }
@@ -395,34 +400,31 @@ bool get_line_by_position(char **map,int map_row,int map_column, char line_name[
   char white_space;
   char character;
 
-  ifstream in_stream1("lines.txt");
+  ifstream in_stream2("lines.txt");
 
-  in_stream1.unsetf(ios::skipws);
+  in_stream2.unsetf(ios::skipws);
 
-  if(in_stream1.fail())
+  if(in_stream2.fail())
     {
       cout << "[ERROR] File 'lines.txt' could not be opened." << endl;
       exit(1); 
     }
       
-  while(!in_stream1.eof())
+  while(!in_stream2.eof())
     {
-      in_stream1>>character;
-      in_stream1>>white_space;
-      in_stream1.getline(line_name,max);
+      in_stream2>>character;
+      in_stream2>>white_space;
+      in_stream2.getline(line_name,max);
       
       if(map[map_row][map_column]==character)
 	{
-	  in_stream1.close();
+	  in_stream2.close();
 	  return true;
 	}
     }
-  in_stream1.close();
+  in_stream2.close();
   return false;
 }
-
-
-
 
 
 
@@ -446,7 +448,7 @@ int validate_route(char** map,int height,int width, char* start_station,char* ro
 
   char** route_array = allocate_route_array(route, n_rows, n_columns);
  
-  int result;
+  
   char map_char;
   enum State {AT_STATION, ON_LINE};
   State prev_state = AT_STATION;
@@ -456,30 +458,29 @@ int validate_route(char** map,int height,int width, char* start_station,char* ro
   int prev_prev_row=map_row, prev_prev_column=map_column;
   
   char current_name[30];
-  char *prev_name, *prev_prev_name;
+  
 
   int count_for_interchange=0;
-  //cout<<map_row<<" "<<map_column<<endl;
+
 
   for (int i=0; i<n_rows; i++) 
     {
       //check invalid direction, ERROR -5
       if (!next_step(route_array[i], map_row, map_column)) 
-	{
-	  return ERROR_INVALID_DIRECTION;
-	}
+	return ERROR_INVALID_DIRECTION;
+	
 
       // check we're in bounds of the map, ERROR -7
       if (map_row > height || map_row <0 || map_column >width || map_column <0)
-	  return ERROR_OUT_OF_BOUNDS;
+	return ERROR_OUT_OF_BOUNDS;
        
       map_char = map[map_row][map_column];
 
       // check we're on the line, ERROR -6
       if (map_char== ' ') 
-      	  return ERROR_OFF_TRACK;
+	return ERROR_OFF_TRACK;
 
-      // Update current state
+      // update current state
       if (get_station_by_position(map, map_row, map_column,current_name))
 	current_state = AT_STATION;
       else if (get_line_by_position(map,map_row,map_column,current_name))
@@ -489,33 +490,33 @@ int validate_route(char** map,int height,int width, char* start_station,char* ro
       if (prev_state==ON_LINE && current_state==ON_LINE)
 	{
 	  if (map_char!= map[prev_row][prev_column])
-	      return ERROR_LINE_HOPPING_BETWEEN_STATIONS;
+	    return ERROR_LINE_HOPPING_BETWEEN_STATIONS;
         }
       
     
       //prev and current state on the line, checking backtracking, ERROR -4
        if (prev_state==ON_LINE && current_state==ON_LINE)
 	 {
-	   if(map_row == prev_prev_row && map_column == prev_prev_column)
+	   if (map_row == prev_prev_row && map_column == prev_prev_column)
 	     return ERROR_BACKTRACKING_BETWEEN_STATIONS;
 	 }
 
       //count for interchange
 	      
-      if(prev_state==AT_STATION)
-	{	 
-     	  if(!isalnum(map[prev_prev_row][prev_prev_column]) && 
-	     (map[map_row][map_column]!= map[prev_prev_row][ prev_prev_column]))
-	    {
-	      count_for_interchange++;
-	    }
-	}
+       if (prev_state==AT_STATION)
+	 {	 
+	   if(!isalnum(map[prev_prev_row][prev_prev_column]) && 
+	      (map[map_row][map_column]!= map[prev_prev_row][ prev_prev_column]))
+	     {
+	       count_for_interchange++;
+	     }
+	 }
 
-      prev_prev_row=prev_row;
-      prev_prev_column=prev_column;
-      prev_row=map_row;
-      prev_column=map_column;
-      prev_state=current_state;
+       prev_prev_row=prev_row;
+       prev_prev_column=prev_column;
+       prev_row=map_row;
+       prev_column=map_column;
+       prev_state=current_state;
  
 
     }
@@ -523,18 +524,13 @@ int validate_route(char** map,int height,int width, char* start_station,char* ro
   //end point not a station, ERROR -2 
 
   if (!isalnum(map_char))
-     return -2;
+    return -2;
 
-  if (get_station_by_position(map, map_row, map_column, current_name)){
+  if (get_station_by_position(map, map_row, map_column, current_name))
+    {
      strcpy(destination, current_name);
      return count_for_interchange;
     }
-
-
-   
- //cout<<map_row<<" "<<map_column<<endl;
-  
-  
 
   return 0;
 }
