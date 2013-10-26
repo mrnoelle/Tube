@@ -21,8 +21,11 @@ const char *error_description(int code);
 /* presupplied helper function for converting string to Direction enum */
 Direction string_to_direction(const char *token);
 
+
+
+
 /*question 1*/
-bool get_symbol_position(char **map, int height, int width, char target, int& r, int& c);
+bool get_symbol_position(char **map, int height, int width, char target, int& map_row, int& map_c);
 
 /*question 2*/
 char get_symbol_for_station_or_line(char* name);
